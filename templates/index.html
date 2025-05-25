@@ -2,113 +2,200 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MQTT Web Client with Auth & Latency</title>
+    <title>Full MQTT Web Client</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans p-4 md:p-8">
-    <div class="container mx-auto max-w-4xl">
-        <h1 class="text-3xl font-bold mb-6 text-center text-blue-600">MQTT Web Client</h1>
+    <div class="container mx-auto max-w-6xl">
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-600">Full Featured MQTT Web Client</h1>
         
-        <!-- Login Form -->
         <div id="loginSection" class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-700">MQTT Login</h2>
-            <div class="mb-4">
-                <label for="mqttUsername" class="block text-sm font-medium text-gray-700 mb-1">MQTT Username:</label>
-                <input type="text" id="mqttUsername" value="kelompoke" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">MQTT Login & Connection Options</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="mqttUsername" class="block text-sm font-medium text-gray-700 mb-1">MQTT Username:</label>
+                    <input type="text" id="mqttUsername" value="kelompoke" class="w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label for="mqttPassword" class="block text-sm font-medium text-gray-700 mb-1">MQTT Password:</label>
+                    <input type="password" id="mqttPassword" value="inites" class="w-full p-2 border border-gray-300 rounded-md">
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="mqttPassword" class="block text-sm font-medium text-gray-700 mb-1">MQTT Password:</label>
-                <input type="password" id="mqttPassword" value="inites" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <div class="mt-4 mb-4 flex items-center">
+                <input type="checkbox" id="useMqtts" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2">
+                <label for="useMqtts" class="text-sm font-medium text-gray-700">Use MQTTS (Secure Connection)</label>
             </div>
-            <button id="loginButton" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md">
-                Login to MQTT
+            <fieldset class="mt-4 border border-gray-300 p-4 rounded-md">
+                <legend class="text-md font-semibold text-gray-700 px-2">Last Will & Testament (LWT) - Optional</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="lwtTopic" class="block text-sm font-medium text-gray-700 mb-1">LWT Topic:</label>
+                        <input type="text" id="lwtTopic" placeholder="e.g., client/status/mydevice" class="w-full p-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="lwtQos" class="block text-sm font-medium text-gray-700 mb-1">LWT QoS:</label>
+                        <select id="lwtQos" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="lwtPayload" class="block text-sm font-medium text-gray-700 mb-1">LWT Payload:</label>
+                    <textarea id="lwtPayload" rows="2" placeholder="e.g., Device offline" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+                </div>
+                <div class="mt-2 flex items-center">
+                    <input type="checkbox" id="lwtRetain" class="h-4 w-4 text-blue-600 border-gray-300 rounded mr-2">
+                    <label for="lwtRetain" class="text-sm font-medium text-gray-700">Retain LWT Message</label>
+                </div>
+            </fieldset>
+            <button id="loginButton" class="mt-6 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-md">
+                Connect to MQTT
             </button>
             <div id="loginStatus" class="mt-3 text-sm"></div>
         </div>
 
-        <!-- Main Controls and Messages (hidden initially) -->
         <div id="mainApp" style="display: none;">
             <div id="connectionStatus" class="mb-4 p-3 rounded-md text-center font-semibold"></div>
             <div class="text-right mb-2 text-sm">Logged in as: <span id="loggedInUser" class="font-semibold"></span> 
-                <button id="logoutButton" class="ml-2 text-red-500 hover:text-red-700 text-xs">(Logout)</button>
+                (Client ID: <span id="loggedInClientId" class="font-mono text-xs text-gray-600"></span>)
+                <button id="logoutButton" class="ml-2 text-red-500 hover:text-red-700 text-xs underline">(Logout)</button>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-6">
-                <div class="controls md:w-1/3 bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Controls</h2>
-                    <div class="mb-4">
-                        <label for="subscribeTopic" class="block text-sm font-medium text-gray-700 mb-1">Subscribe Topic:</label>
-                        <div class="flex">
-                            <input type="text" id="subscribeTopic" value="demo/features/#" class="flex-grow p-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500">
-                            <button id="subscribeButton" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-md">Subscribe</button>
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="lg:w-1/3 space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-700">Publish Message</h2>
+                        <div class="mb-4">
+                            <label for="publishTopic" class="block text-sm font-medium text-gray-700 mb-1">Publish Topic:</label>
+                            <input type="text" id="publishTopic" value="demo/features/web_publish" class="w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div class="mb-4">
+                            <label for="publishPayload" class="block text-sm font-medium text-gray-700 mb-1">Payload:</label>
+                            <textarea id="publishPayload" rows="3" class="w-full p-2 border border-gray-300 rounded-md">Hello from Web GUI!</textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="publishQos" class="block text-sm font-medium text-gray-700 mb-1">QoS:</label>
+                                <select id="publishQos" class="w-full p-2 border border-gray-300 rounded-md">
+                                    <option value="0">0</option><option value="1" selected>1</option><option value="2">2</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="messageExpiry" class="block text-sm font-medium text-gray-700 mb-1">Expiry (sec, 0=none):</label>
+                                <input type="number" id="messageExpiry" value="0" min="0" class="w-full p-2 border border-gray-300 rounded-md">
+                            </div>
+                        </div>
+                        <div class="mb-4 flex items-center">
+                            <input type="checkbox" id="publishRetain" class="h-4 w-4 text-blue-600 rounded mr-2">
+                            <label for="publishRetain" class="text-sm font-medium text-gray-700">Retain Message</label>
+                        </div>
+                        <button id="publishButton" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md">Publish</button>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-700">Subscribe</h2>
+                        <div class="mb-4">
+                            <label for="subscribeTopic" class="block text-sm font-medium text-gray-700 mb-1">Subscribe Topic (e.g., demo/# or clients/+/response/+):</label>
+                            <div class="flex">
+                                <input type="text" id="subscribeTopic" value="demo/#" class="flex-grow p-2 border border-gray-300 rounded-l-md">
+                                <button id="subscribeButton" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-md">Subscribe</button>
+                            </div>
                         </div>
                     </div>
-                    <hr class="my-6 border-gray-200">
-                    <div class="mb-4">
-                        <label for="publishTopic" class="block text-sm font-medium text-gray-700 mb-1">Publish Topic:</label>
-                        <input type="text" id="publishTopic" value="demo/features/web" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="mb-4">
-                        <label for="publishPayload" class="block text-sm font-medium text-gray-700 mb-1">Payload:</label>
-                        <textarea id="publishPayload" rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">Hello from Web!</textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label for="publishQos" class="block text-sm font-medium text-gray-700 mb-1">QoS:</label>
-                        <input type="number" id="publishQos" value="0" min="0" max="2" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="mb-4 flex items-center">
-                        <input type="checkbox" id="publishRetain" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2">
-                        <label for="publishRetain" class="text-sm font-medium text-gray-700">Retain Message</label>
-                    </div>
-                    <button id="publishButton" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md">
-                        Publish
-                    </button>
                 </div>
 
-                <div class="messages md:w-2/3 bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Received Messages</h2>
-                    <ul id="messageLog" class="h-96 overflow-y-auto border border-gray-200 rounded-md p-2 space-y-2">
-                        <li class="text-gray-500 italic p-2" id="noMessagesPlaceholder">Login to see messages...</li>
-                    </ul>
+                <div class="lg:w-2/3 space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-700">Received Messages Log</h2>
+                        <ul id="messageLog" class="h-80 overflow-y-auto border border-gray-200 rounded-md p-2 space-y-2 text-xs">
+                            <li class="text-gray-500 italic p-2" id="noMessagesPlaceholder">Login to see messages...</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-700">Request / Response Pattern</h2>
+                        <div class="mb-4">
+                            <label for="requestTopic" class="block text-sm font-medium text-gray-700 mb-1">Request Topic (send to):</label>
+                            <input type="text" id="requestTopic" value="service/request/echo" class="w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div class="mb-4">
+                            <label for="requestPayload" class="block text-sm font-medium text-gray-700 mb-1">Request Payload:</label>
+                            <textarea id="requestPayload" rows="2" class="w-full p-2 border border-gray-300 rounded-md">Please echo this!</textarea>
+                        </div>
+                        <button id="sendRequestButton" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-md">Send Request</button>
+                        <div id="requestResponseLog" class="mt-4 text-sm space-y-1 h-40 overflow-y-auto border border-gray-200 p-2 rounded-md">
+                            <p class="italic text-gray-500" id="noReqResPlaceholder">Request/Response activity will appear here...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const socket = io(); 
+        const socket = io({ autoConnect: false });
 
-        // Login elements
-        const loginSection = document.getElementById('loginSection');
-        const mainAppSection = document.getElementById('mainApp');
-        const mqttUsernameEl = document.getElementById('mqttUsername');
-        const mqttPasswordEl = document.getElementById('mqttPassword');
-        const loginButton = document.getElementById('loginButton');
-        const loginStatusEl = document.getElementById('loginStatus');
-        const loggedInUserEl = document.getElementById('loggedInUser');
-        const logoutButton = document.getElementById('logoutButton');
-
-        // Main app elements
-        const connectionStatusEl = document.getElementById('connectionStatus');
-        const subscribeTopicEl = document.getElementById('subscribeTopic');
-        const subscribeButton = document.getElementById('subscribeButton');
-        const publishTopicEl = document.getElementById('publishTopic');
-        const publishPayloadEl = document.getElementById('publishPayload');
-        const publishQosEl = document.getElementById('publishQos');
-        const publishRetainEl = document.getElementById('publishRetain');
-        const publishButton = document.getElementById('publishButton');
-        const messageLogEl = document.getElementById('messageLog');
-        const noMessagesPlaceholder = document.getElementById('noMessagesPlaceholder');
+        let loginSection, mainAppSection, mqttUsernameEl, mqttPasswordEl, useMqttsEl, lwtTopicEl, lwtPayloadEl, lwtQosEl, lwtRetainEl, loginButton, loginStatusEl, loggedInUserEl, loggedInClientIdEl, logoutButton, connectionStatusEl, subscribeTopicEl, subscribeButton, publishTopicEl, publishPayloadEl, publishQosEl, messageExpiryEl, publishRetainEl, publishButton, messageLogEl, noMessagesPlaceholder, requestTopicEl, requestPayloadEl, sendRequestButton, requestResponseLogEl, noReqResPlaceholder;
+        
         let hasReceivedMessages = false;
+        let firstReqResMessage = true;
+        let currentMqttClientId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loginSection = document.getElementById('loginSection');
+            mainAppSection = document.getElementById('mainApp');
+            mqttUsernameEl = document.getElementById('mqttUsername');
+            mqttPasswordEl = document.getElementById('mqttPassword');
+            useMqttsEl = document.getElementById('useMqtts');
+            lwtTopicEl = document.getElementById('lwtTopic');
+            lwtPayloadEl = document.getElementById('lwtPayload');
+            lwtQosEl = document.getElementById('lwtQos');
+            lwtRetainEl = document.getElementById('lwtRetain');
+            loginButton = document.getElementById('loginButton');
+            loginStatusEl = document.getElementById('loginStatus');
+            loggedInUserEl = document.getElementById('loggedInUser');
+            loggedInClientIdEl = document.getElementById('loggedInClientId');
+            logoutButton = document.getElementById('logoutButton');
+            connectionStatusEl = document.getElementById('connectionStatus');
+            subscribeTopicEl = document.getElementById('subscribeTopic');
+            subscribeButton = document.getElementById('subscribeButton');
+            publishTopicEl = document.getElementById('publishTopic');
+            publishPayloadEl = document.getElementById('publishPayload');
+            publishQosEl = document.getElementById('publishQos');
+            messageExpiryEl = document.getElementById('messageExpiry');
+            publishRetainEl = document.getElementById('publishRetain');
+            publishButton = document.getElementById('publishButton');
+            messageLogEl = document.getElementById('messageLog');
+            noMessagesPlaceholder = document.getElementById('noMessagesPlaceholder');
+            requestTopicEl = document.getElementById('requestTopic');
+            requestPayloadEl = document.getElementById('requestPayload');
+            sendRequestButton = document.getElementById('sendRequestButton');
+            requestResponseLogEl = document.getElementById('requestResponseLog');
+            noReqResPlaceholder = document.getElementById('noReqResPlaceholder');
+
+            loginSection.style.display = 'block';
+            mainAppSection.style.display = 'none';
+            if (loginStatusEl) updateLoginStatus('Please login with your MQTT credentials.');
+
+            if (loginButton) loginButton.addEventListener('click', handleLoginClick);
+            if (logoutButton) logoutButton.addEventListener('click', handleLogoutClick);
+            if (subscribeButton) subscribeButton.addEventListener('click', handleSubscribeClick);
+            if (publishButton) publishButton.addEventListener('click', handlePublishClick);
+            if (sendRequestButton) sendRequestButton.addEventListener('click', handleSendRequestClick);
+            
+            console.log("JS DEBUG: DOMContentLoaded finished, attempting socket.connect()");
+            socket.connect();
+        });
 
         function updateStatus(message, type = 'info') {
+            if (!connectionStatusEl) {
+                console.error("JS DEBUG: connectionStatusEl is null or undefined in updateStatus! Cannot update status.");
+                return;
+            }
             connectionStatusEl.textContent = message;
-            const classesToRemove = Array.from(connectionStatusEl.classList).filter(
-                cls => cls.startsWith('bg-') || cls.startsWith('text-')
-            );
+            const classesToRemove = Array.from(connectionStatusEl.classList).filter(cls => cls.startsWith('bg-') || cls.startsWith('text-'));
             connectionStatusEl.classList.remove(...classesToRemove);
-            
             let bgColorClass = 'bg-blue-100 text-blue-700';
             if (type === 'success') bgColorClass = 'bg-green-100 text-green-700';
             else if (type === 'warning') bgColorClass = 'bg-yellow-100 text-yellow-700';
@@ -117,140 +204,237 @@
         }
         
         function updateLoginStatus(message, isError = false) {
+            if (!loginStatusEl) return;
             loginStatusEl.textContent = message;
             loginStatusEl.className = `mt-3 text-sm ${isError ? 'text-red-600' : 'text-green-600'}`;
         }
 
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return String(unsafe);
+            return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
         socket.on('connect', () => {
-            console.log('Socket.IO: Connected to backend.');
-            // Backend will send 'request_login'
+            console.log('JS DEBUG: Socket.IO: Connected to backend.');
         });
         
         socket.on('request_login', (data) => {
-            console.log('Socket.IO: Backend requests login.', data.message);
-            updateLoginStatus(data.message);
-            loginSection.style.display = 'block';
-            mainAppSection.style.display = 'none';
+            console.log('JS DEBUG: Socket.IO: Backend requests login.', data.message);
+            showLoginScreen(data.message);
         });
 
         socket.on('login_status', (data) => {
+            console.log('JS DEBUG: Received login_status event from server:', data);
             if (data.success) {
-                updateLoginStatus(`Logged in as ${data.username}!`, false);
-                loggedInUserEl.textContent = data.username;
-                loginSection.style.display = 'none';
-                mainAppSection.style.display = 'block';
-                messageLogEl.innerHTML = '<li class="text-gray-500 italic p-2" id="noMessagesPlaceholder">Waiting for messages...</li>'; // Reset message log
+                if (loginStatusEl) updateLoginStatus(`Logged in as ${data.username}!`, false);
+                if (loggedInUserEl) loggedInUserEl.textContent = data.username;
+                currentMqttClientId = data.client_id; 
+                if (loggedInClientIdEl) loggedInClientIdEl.textContent = currentMqttClientId || 'N/A';
+                if (loginSection) loginSection.style.display = 'none';
+                if (mainAppSection) mainAppSection.style.display = 'block';
+                if (messageLogEl) messageLogEl.innerHTML = ''; 
+                if (noMessagesPlaceholder) noMessagesPlaceholder.style.display = 'block'; 
                 hasReceivedMessages = false;
+                if (requestResponseLogEl) requestResponseLogEl.innerHTML = ''; 
+                if (noReqResPlaceholder) noReqResPlaceholder.style.display = 'block';
+                firstReqResMessage = true;
             } else {
-                updateLoginStatus(data.message, true);
+                if (loginStatusEl) updateLoginStatus(data.message, true);
             }
         });
 
-
         socket.on('disconnect', () => {
-            updateStatus('Socket.IO Disconnected from Backend.', 'error');
-            loginSection.style.display = 'block'; // Show login on disconnect
-            mainAppSection.style.display = 'none';
-            updateLoginStatus('Disconnected. Please login again.');
-            console.log('Socket.IO: Disconnected from backend.');
+            console.log('JS DEBUG: Socket.IO: Disconnected from backend.');
+            showLoginScreen('Socket.IO Disconnected. Please login again.');
+            currentMqttClientId = null;
         });
         
         socket.on('mqtt_status', (data) => {
-            console.log('MQTT Status Update:', data);
-            // Similar status update logic as before
-            if (mainAppSection.style.display === 'block') { // Only update main status if logged in
+            console.log('JS DEBUG: Received mqtt_status event from server:', data);
+            if (!connectionStatusEl) { 
+                console.error("JS DEBUG: connectionStatusEl is null! Cannot update MQTT status on UI for message:", data.message);
+                return;
+            }
+            console.log('JS DEBUG: Attempting to update connectionStatusEl for mqtt_status.');
+            
+            if (mainAppSection && mainAppSection.style.display === 'block') { 
                 if (data.message.toLowerCase().includes('connected successfully') || data.message.toLowerCase().includes('connected as')) {
                     updateStatus(`MQTT: ${data.message}`, 'success');
                 } else if (data.message.toLowerCase().includes('failed') || data.message.toLowerCase().includes('error') || data.message.toLowerCase().includes('disconnected')) {
                     updateStatus(`MQTT: ${data.message}`, 'error');
                 } else if (data.message.toLowerCase().includes('connecting') || data.message.toLowerCase().includes('attempting')) {
                     updateStatus(`MQTT: ${data.message}`, 'warning');
-                } else {
+                } else { 
                     updateStatus(`MQTT: ${data.message}`, 'info');
                 }
+            } else {
+                 console.log('JS DEBUG: mainAppSection not visible, not updating main connectionStatusEl for mqtt_status.');
             }
         });
 
         socket.on('mqtt_message', (data) => {
-            console.log('MQTT Message received via Socket.IO:', data);
+            console.log('JS DEBUG: Received mqtt_message event from server:', data);
+            if (!messageLogEl) { 
+                 console.error("JS DEBUG: messageLogEl is null! Cannot append MQTT message to UI.");
+                 return;
+            }
+            console.log('JS DEBUG: Attempting to update messageLogEl.');
+
             if (!hasReceivedMessages) {
-                const placeholder = document.getElementById('noMessagesPlaceholder');
-                if(placeholder) placeholder.style.display = 'none';
+                if(noMessagesPlaceholder) noMessagesPlaceholder.style.display = 'none';
                 hasReceivedMessages = true;
             }
             const listItem = document.createElement('li');
             listItem.className = 'p-3 bg-gray-50 rounded-md shadow-sm text-sm break-words';
-            
-            const escapedPayload = data.payload.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+            const escapedPayload = escapeHtml(data.payload);
             let latencyText = "";
             if (data.latency_ms !== null && data.latency_ms !== undefined) {
                 latencyText = `<span class="text-purple-600">(Latency: ${data.latency_ms.toFixed(1)} ms)</span>`;
             }
-
             listItem.innerHTML = `<div class="font-semibold text-gray-700">Topic: <span class="font-normal text-indigo-600">${data.topic}</span> ${latencyText}</div>
                                   <pre class="mt-1 text-gray-600 whitespace-pre-wrap">${escapedPayload}</pre>
                                   <div class="mt-1 text-xs text-gray-500">
                                     QoS: ${data.qos} | Retain: ${data.retain ? 'Yes' : 'No'}
                                   </div>`;
             messageLogEl.prepend(listItem);
+            console.log("JS DEBUG: Appended message to log:", listItem.innerHTML.substring(0, 100) + "...");
         });
 
         socket.on('publish_ack', (data) => {
-            console.log('Publish ACK from server:', data.message);
+            console.log('JS DEBUG: Received publish_ack event from server:', data.message);
         });
 
-        loginButton.addEventListener('click', () => {
+        socket.on('mqtt_request_response_update', (data) => {
+            console.log('JS DEBUG: Received mqtt_request_response_update event from server:', data);
+            if (!requestResponseLogEl) { 
+                console.error("JS DEBUG: requestResponseLogEl is null! Cannot update request/response log.");
+                return;
+            }
+            console.log('JS DEBUG: Attempting to update requestResponseLogEl.');
+
+            if (firstReqResMessage) {
+                if(noReqResPlaceholder) noReqResPlaceholder.style.display = 'none';
+                requestResponseLogEl.innerHTML = ''; 
+                firstReqResMessage = false;
+            }
+            const p = document.createElement('p');
+            p.className = 'border-b border-gray-100 pb-1 mb-1';
+            let content = `<b>[${data.type.toUpperCase()}]</b> CorrID: ${data.correlation_id || 'N/A'}`;
+            if (data.status) content += ` - Status: ${data.status}`;
+            if (data.message) content += ` - Msg: ${escapeHtml(data.message)}`;
+            if (data.request_topic) content += ` - ReqTopic: ${escapeHtml(data.request_topic)}`;
+            if (data.response_topic_subscribed) content += ` - RespSub: ${escapeHtml(data.response_topic_subscribed)}`;
+            if (data.topic) content += ` - OnTopic: ${escapeHtml(data.topic)}`;
+            if (data.payload) content += `<br><pre class="text-xs bg-gray-100 p-1 rounded">Payload: ${escapeHtml(data.payload)}</pre>`;
+            if (data.latency_ms) content += ` (Latency: ${data.latency_ms.toFixed(1)} ms)`;
+            
+            if (data.type === 'error' || data.status === 'timeout') p.classList.add('text-red-600');
+            else if (data.type === 'response' || data.status === 'completed') p.classList.add('text-green-600');
+            else if (data.type === 'request_sent') p.classList.add('text-blue-600');
+            else p.classList.add('text-gray-700');
+
+            p.innerHTML = content;
+            requestResponseLogEl.prepend(p);
+            console.log("JS DEBUG: Appended to request/response log:", p.innerHTML.substring(0,100) + "...");
+        });
+
+        function handleLoginClick() {
             const username = mqttUsernameEl.value.trim();
-            const password = mqttPasswordEl.value; // Passwords can have spaces
+            const password = mqttPasswordEl.value;
+            const useMqtts = useMqttsEl.checked;
+            const lwt = {
+                topic: lwtTopicEl.value.trim(),
+                payload: lwtPayloadEl.value,
+                qos: parseInt(lwtQosEl.value, 10),
+                retain: lwtRetainEl.checked
+            };
+            const lwtData = (lwt.topic) ? lwt : null;
+
             if (username && password) {
                 updateLoginStatus('Attempting login...');
-                socket.emit('web_login', { username: username, password: password });
+                if (!socket.connected) {
+                    socket.connect(); 
+                }
+                 setTimeout(() => { 
+                    if (socket.connected) {
+                        socket.emit('web_login', { 
+                            username: username, password: password, 
+                            use_mqtts: useMqtts, lwt: lwtData
+                        });
+                    } else {
+                        updateLoginStatus('Socket.IO not connected. Please wait and try again.', true);
+                    }
+                }, 200);
             } else {
                 updateLoginStatus('Username and password are required.', true);
             }
-        });
+        }
 
-        logoutButton.addEventListener('click', () => {
-            socket.disconnect(); // This will trigger 'disconnect' on server and client
-            // UI reset is handled by socket.on('disconnect')
-        });
+        function handleLogoutClick() {
+            console.log("JS DEBUG: Logout clicked.");
+            socket.disconnect(); 
+        }
 
-        subscribeButton.addEventListener('click', () => {
+        function showLoginScreen(message) {
+            if (loginSection) loginSection.style.display = 'block';
+            if (mainAppSection) mainAppSection.style.display = 'none';
+            if (loginStatusEl) updateLoginStatus(message || 'Please login.');
+            if (loggedInUserEl) loggedInUserEl.textContent = "";
+            if (loggedInClientIdEl) loggedInClientIdEl.textContent = "";
+        }
+
+        function handleSubscribeClick() {
             const topic = subscribeTopicEl.value.trim();
-            if (topic) {
+            if (topic && socket.connected) {
                 socket.emit('subscribe_to_topic', { topic: topic });
-                console.log(`UI: Emitted 'subscribe_to_topic' for ${topic}`);
+            } else if (!socket.connected) {
+                alert("Not connected to backend. Please login.");
             } else {
                 alert("Please enter a topic to subscribe to.");
             }
-        });
+        }
 
-        publishButton.addEventListener('click', () => {
+        function handlePublishClick() {
             const topic = publishTopicEl.value.trim();
             const payload = publishPayloadEl.value;
             const qos = parseInt(publishQosEl.value, 10);
             const retain = publishRetainEl.checked;
+            const expiryVal = messageExpiryEl.value.trim();
+            const expiry = expiryVal ? parseInt(expiryVal, 10) : 0;
 
-            if (topic) {
-                const clientPublishTimeMs = new Date().getTime(); // Timestamp for latency
+            if (topic && socket.connected) {
+                const clientPublishTimeMs = new Date().getTime();
                 socket.emit('publish_mqtt_message', {
-                    topic: topic,
-                    payload: payload,
-                    qos: qos,
-                    retain: retain,
-                    client_publish_time_ms: clientPublishTimeMs // Send to backend
+                    topic: topic, payload: payload, qos: qos, retain: retain,
+                    client_publish_time_ms: clientPublishTimeMs,
+                    message_expiry_interval: expiry > 0 ? expiry : null
                 });
-                console.log(`UI: Emitted 'publish_mqtt_message' to ${topic} with timestamp.`);
+            } else if (!socket.connected) {
+                alert("Not connected to backend. Please login.");
             } else {
                 alert("Please enter a topic to publish to.");
             }
-        });
+        }
 
-        // Initial UI state
-        loginSection.style.display = 'block';
-        mainAppSection.style.display = 'none';
-        updateLoginStatus('Please login with your MQTT credentials.');
-
+        function handleSendRequestClick() {
+            const reqTopic = requestTopicEl.value.trim();
+            const reqPayload = requestPayloadEl.value;
+            if (reqTopic && socket.connected) {
+                socket.emit('send_mqtt_request', {
+                    request_topic: reqTopic,
+                    request_payload: reqPayload
+                });
+                if (firstReqResMessage && requestResponseLogEl) { requestResponseLogEl.innerHTML = ''; firstReqResMessage = false; }
+                const p = document.createElement('p');
+                p.innerHTML = `<b>[SENT REQUEST]</b> To: ${escapeHtml(reqTopic)} <br><pre class="text-xs bg-gray-100 p-1 rounded">${escapeHtml(reqPayload)}</pre>`;
+                p.classList.add('text-gray-700', 'border-b', 'border-gray-100', 'pb-1', 'mb-1');
+                if (requestResponseLogEl) requestResponseLogEl.prepend(p);
+            } else if (!socket.connected) {
+                alert("Not connected to backend. Please login.");
+            } else {
+                alert("Please enter a request topic.");
+            }
+        }
     </script>
 </body>
 </html>
