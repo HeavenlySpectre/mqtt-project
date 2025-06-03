@@ -40,7 +40,7 @@ def save_web_user_to_csv(user_id, username, password_hash):
         fieldnames = ['id', 'username', 'password_hash']
         rows = []
         user_exists = False
-        if os.path.exists(WEB_USERS_FILE) and os.path.getsize(WEB_USERS_FILE) > 0 : # Pastikan file ada dan tidak kosong
+        if os.path.exists(WEB_USERS_FILE) and os.path.getsize(WEB_USERS_FILE) > 0 : 
             with open(WEB_USERS_FILE, mode='r', newline='') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
@@ -49,14 +49,11 @@ def save_web_user_to_csv(user_id, username, password_hash):
                     rows.append(row)
         
         if not user_exists: 
-            # Tulis header jika file baru (atau kosong setelah dibuat)
             write_header = not (os.path.exists(WEB_USERS_FILE) and os.path.getsize(WEB_USERS_FILE) > 0)
             with open(WEB_USERS_FILE, mode='a', newline='') as file:
                 writer = csv.DictWriter(file, fieldnames=fieldnames)
-                if write_header: # Hanya tulis header jika file benar-benar baru/kosong
-                    # Fungsi load_web_users_from_csv sudah menangani pembuatan header jika file tidak ada.
-                    # Cek ini untuk kasus file ada tapi kosong (jarang terjadi jika load benar)
-                    if not rows: # Jika file ada tapi kosong setelah dibaca
+                if write_header: 
+                    if not rows: 
                          writer.writeheader()
                 writer.writerow({'id': user_id, 'username': username, 'password_hash': password_hash})
             return True
@@ -212,8 +209,8 @@ def create_mqtt_client_for_session(mqtt_client_key, web_username_for_log, mqtt_u
     def on_message(client, userdata, msg):
         key = userdata.get('mqtt_client_key')
         cid = userdata.get('client_id') 
-        web_user_log = userdata.get('web_user_for_log') # Untuk logging jika perlu
-        mqtt_user_log = userdata.get('mqtt_user') # Untuk logging jika perlu
+        web_user_log = userdata.get('web_user_for_log') 
+        mqtt_user_log = userdata.get('mqtt_user') 
 
         if not key or not cid: 
             print(f"ON_MESSAGE: Userdata hilang key/cid. Topik: {msg.topic}.")
@@ -225,7 +222,7 @@ def create_mqtt_client_for_session(mqtt_client_key, web_username_for_log, mqtt_u
             return
         
         pending_requests_for_client = client_session_info.get('pending_requests')
-        if pending_requests_for_client is None: # Seharusnya tidak terjadi jika inisialisasi benar
+        if pending_requests_for_client is None: 
             print(f"KUNCI {key} (CID: {cid}): ON_MESSAGE - KRITIS - 'pending_requests' hilang! Inisialisasi ulang.")
             client_session_info['pending_requests'] = {} 
             pending_requests_for_client = client_session_info['pending_requests']
@@ -324,7 +321,7 @@ def create_mqtt_client_for_session(mqtt_client_key, web_username_for_log, mqtt_u
         if not is_a_response_to_us and not is_a_direct_request_to_us_and_echoed and not is_a_general_request_we_can_echo:
             publish_time_ms = None
             if msg.properties and hasattr(msg.properties, 'UserProperty'):
-                for prop_key, value in msg.properties.UserProperty: # Ganti nama variabel agar tidak bentrok
+                for prop_key, value in msg.properties.UserProperty: 
                     if prop_key == 'client_publish_time_ms':
                         try: publish_time_ms = float(value); break
                         except ValueError: 
@@ -430,7 +427,7 @@ def cleanup_mqtt_resources(mqtt_client_key_to_clean, reason="Tidak diketahui"):
     loop_thread = client_info.get('loop_thread')
     web_user_log = client_info.get('web_user', 'pengguna_web_tidak_dikenal')
     mqtt_user_log = client_info.get('mqtt_user', 'pengguna_mqtt_tidak_dikenal')
-    client_id_str = client_info.get('client_id') # This is the MQTT Client ID
+    client_id_str = client_info.get('client_id') 
     
     print(f"KUNCI {mqtt_client_key_to_clean} (Web: {web_user_log}, MQTT: {mqtt_user_log}, CID: {client_id_str}): Membersihkan klien MQTT...")
     try:
@@ -446,17 +443,13 @@ def cleanup_mqtt_resources(mqtt_client_key_to_clean, reason="Tidak diketahui"):
             except Exception as e:
                 print(f"KUNCI {mqtt_client_key_to_clean} (CID: {client_id_str}): Kesalahan saat publish status keberangkatan: {e}")
 
-        # 2. Signal the MQTT loop to stop
         if client_id_str and client_id_str in client_stop_events:
             print(f"KUNCI {mqtt_client_key_to_clean} (CID: {client_id_str}): Mengatur stop event untuk loop MQTT.")
             client_stop_events[client_id_str].set()
 
-        # 3. Call MQTT client's disconnect method
-        # This will send a DISCONNECT packet if connected.
         print(f"KUNCI {mqtt_client_key_to_clean} (CID: {client_id_str}): Memanggil MQTT client.disconnect().")
         mqtt_client_instance.disconnect() 
 
-        # 4. Join the MQTT loop thread
         if loop_thread and loop_thread.is_alive():
             print(f"KUNCI {mqtt_client_key_to_clean} (CID: {client_id_str}): Menunggu thread loop MQTT {loop_thread.name} untuk join...")
             loop_thread.join(timeout=3.0) 
@@ -465,7 +458,6 @@ def cleanup_mqtt_resources(mqtt_client_key_to_clean, reason="Tidak diketahui"):
             else:
                 print(f"KUNCI {mqtt_client_key_to_clean} (CID: {client_id_str}): Thread loop MQTT {loop_thread.name} telah join.")
         
-        # 5. Clean up the stop event
         if client_id_str and client_id_str in client_stop_events: 
             client_stop_events.pop(client_id_str, None)
             print(f"KUNCI {mqtt_client_key_to_clean} (CID: {client_id_str}): Stop event MQTT telah dihapus.")
@@ -549,13 +541,13 @@ def web_logout_route():
 
 
 @socketio.on('connect')
-def handle_socket_connect(): 
+def handle_socket_connect(auth=None): 
     if not current_user.is_authenticated:
         print(f"SOCKET.IO: Koneksi dari pengguna anonim (SID: {request.sid}). Ditolak.")
         return False 
 
     mqtt_key = get_mqtt_client_key(current_user.id, request.sid)
-    join_room(mqtt_key, sid=request.sid) # MODIFIED: Used imported join_room
+    join_room(mqtt_key, sid=request.sid) 
     
     print(f"SOCKET.IO: Klien terhubung (PenggunaWeb: {current_user.username}, SID: {request.sid}, KunciMQTT: {mqtt_key}).")
     socketio.emit('request_mqtt_login', {'message': 'Silakan masukkan kredensial MQTT Anda.'}, room=mqtt_key)
@@ -780,17 +772,19 @@ def handle_mqtt_request(data):
         client_info['performance_data']['bytes_out_count'] += len(request_payload.encode('utf-8', errors='replace'))
 
         def request_timeout_handler(key_for_timeout, cid_for_timeout, corr_id_for_timeout, pending_reqs_ref_for_timeout):
-            if corr_id_for_timeout in pending_reqs_ref_for_timeout:
-                print(f"KUNCI {key_for_timeout} (CID: {cid_for_timeout}): REQUEST TIMEOUT CorrID {corr_id_for_timeout}")
-                pending_reqs_ref_for_timeout.pop(corr_id_for_timeout) # Hapus dari dict asli
+            # Periksa apakah request masih pending sebelum menyatakan timeout
+            # Ini penting jika response datang tepat sebelum timeout handler berjalan
+            if key_for_timeout in mqtt_clients and corr_id_for_timeout in mqtt_clients[key_for_timeout].get('pending_requests', {}):
+                print(f"KUNCI {key_for_timeout} (CID: {cid_for_timeout}): REQUEST TIMEOUT untuk Correlation ID {corr_id_for_timeout}")
+                mqtt_clients[key_for_timeout]['pending_requests'].pop(corr_id_for_timeout) # Hapus dari dict asli
                 socketio.emit('mqtt_request_response_update', {
                     'type': 'timeout', 'correlation_id': corr_id_for_timeout, 'status': 'timeout'
                 }, room=key_for_timeout)
             else:
-                 print(f"KUNCI {key_for_timeout} (CID: {cid_for_timeout}): Timeout CorrID {corr_id_for_timeout} sudah diproses/dibersihkan.")
+                 print(f"KUNCI {key_for_timeout} (CID: {cid_for_timeout}): Timeout untuk CorrID {corr_id_for_timeout} terpicu, tetapi request sudah selesai/dibersihkan.")
         
         timeout_thread = threading.Timer(REQUEST_TIMEOUT_SECONDS, request_timeout_handler, 
-                                         args=(mqtt_key, client_id, correlation_id, pending_requests_for_client))
+                                         args=(mqtt_key, client_id, correlation_id, pending_requests_for_client)) # Kirim dict referensi asli
         timeout_thread.daemon = True
         timeout_thread.start()
 
@@ -798,6 +792,57 @@ def handle_mqtt_request(data):
         print(f"KUNCI {mqtt_key} (CID: {client_id}): Kesalahan publish request MQTT: {e}")
         socketio.emit('mqtt_request_response_update', {'type': 'error', 'message': f'Kesalahan mengirim request: {e}'}, room=mqtt_key)
         client_info['performance_data']['publish_errors'] +=1
+
+@socketio.on('test_bulk_publish')
+@login_required
+def handle_test_bulk_publish(data):
+    mqtt_key = get_mqtt_client_key(current_user.id, request.sid)
+    client_info = mqtt_clients.get(mqtt_key)
+
+    if not client_info or not client_info['client'].is_connected():
+        socketio.emit('mqtt_status', {'message': 'Klien MQTT tidak terhubung. Tidak dapat melakukan bulk publish.'}, room=mqtt_key)
+        return
+
+    mqtt_client = client_info['client']
+    cid = client_info['client_id']
+    
+    topic = data.get('topic', 'test/bulk_publish')
+    num_messages = data.get('count', 25) 
+    qos = data.get('qos', 1) 
+    # Add a small configurable delay for testing
+    delay_between_publishes = data.get('delay_ms', 10) # Default 10ms, can be 0
+
+    print(f"KUNCI {mqtt_key} (CID: {cid}): Memulai bulk publish {num_messages} pesan ke topik '{topic}' dengan QoS {qos}, delay {delay_between_publishes}ms.")
+    socketio.emit('mqtt_status', {'message': f'Memulai bulk publish {num_messages} pesan ke {topic} (delay: {delay_between_publishes}ms)...'}, room=mqtt_key)
+
+    messages_published_by_paho = 0 # Count how many Paho accepted into its queue/sent
+
+    for i in range(num_messages):
+        if not mqtt_client.is_connected(): # Check connection before each publish
+            print(f"KUNCI {mqtt_key} (CID: {cid}): Terputus sebelum publish pesan bulk #{i+1}. Menghentikan bulk publish.")
+            socketio.emit('mqtt_status', {'message': f'Koneksi MQTT terputus saat bulk publish. {i} pesan dicoba.'}, room=mqtt_key)
+            break
+            
+        payload = f"Pesan bulk #{i+1} dari {cid} @ {time.time()}"
+        print(f"KUNCI {mqtt_key} (CID: {cid}): Mencoba publish pesan bulk #{i+1} - Payload: {payload[:30]}...")
+        try:
+            # publish() for QoS 1/2 returns a PahoMQTTMessageInfo object
+            msg_info = mqtt_client.publish(topic, payload, qos=int(qos))
+            messages_published_by_paho += 1
+            # print(f"KUNCI {mqtt_key} (CID: {cid}): Pesan #{i+1} di-queue/dikirim oleh Paho (MID: {msg_info.mid if msg_info else 'N/A'}). Menunggu on_publish...")
+            if msg_info and msg_info.rc != mqtt.MQTT_ERR_SUCCESS:
+                 print(f"KUNCI {mqtt_key} (CID: {cid}): Paho publish() mengembalikan error untuk pesan #{i+1}: {mqtt.error_string(msg_info.rc)}")
+                 # This might happen if Paho's internal queue is full and it's configured not to block
+        except Exception as e:
+            print(f"KUNCI {mqtt_key} (CID: {cid}): Exception saat publish pesan bulk #{i+1}: {e}")
+            break # Stop on exception
+
+        if delay_between_publishes > 0:
+            time.sleep(delay_between_publishes / 1000.0)
+
+    final_message = f'Selesai mencoba mengirim {messages_published_by_paho}/{num_messages} pesan bulk. Monitor log server untuk ack final.'
+    socketio.emit('mqtt_status', {'message': final_message}, room=mqtt_key)
+    print(f"KUNCI {mqtt_key} (CID: {cid}): {final_message}")
 
 
 def periodic_performance_updater_task(mqtt_key_for_task): 
@@ -815,7 +860,7 @@ def periodic_performance_updater_task(mqtt_key_for_task):
             perf_data = client_info['performance_data']
             current_time = time.time()
             time_delta_sec = current_time - perf_data.get('last_update_time', current_time)
-            if time_delta_sec <= 0: time_delta_sec = 1 # Hindari div by zero
+            if time_delta_sec <= 0: time_delta_sec = 1 
 
             msg_in_rate = perf_data.get('msg_in_count', 0) / time_delta_sec
             msg_out_rate = perf_data.get('msg_out_count', 0) / time_delta_sec

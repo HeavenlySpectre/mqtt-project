@@ -1,9 +1,8 @@
-<!-- START OF FILE index.html COMPLETE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MQTT - Modern Web Client</title>
+    <title>MQTTry - Modern Web Client</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js"></script>
@@ -38,10 +37,10 @@
             </h1>
             {% if current_user.is_authenticated %}
             <div>
-                <span class="text-sm text-slate-600 mr-3">Web User: <strong class="text-indigo-700">{{ current_user.username }}</strong></span>
+                <span class="text-sm text-slate-600 mr-3">Pengguna Web: <strong class="text-indigo-700">{{ current_user.username }}</strong></span>
                 <a href="{{ url_for('web_logout_route') }}" 
                    class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg text-sm transition-colors">
-                    Web Logout
+                    Logout Web
                 </a>
             </div>
             {% endif %}
@@ -64,34 +63,34 @@
         {% endwith %}
 
         <div id="mqttConnectionSection" class="bg-white p-8 rounded-xl shadow-2xl mb-8 max-w-2xl mx-auto">
-            <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center">Connect to MQTT Broker</h2>
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center">Hubungkan ke Broker MQTT</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="mqttUsername" class="block text-sm font-medium text-slate-600 mb-1">MQTT Username</label>
+                    <label for="mqttUsername" class="block text-sm font-medium text-slate-600 mb-1">Nama Pengguna MQTT</label>
                     <input type="text" id="mqttUsername" value="kelompoke" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                 </div>
                 <div>
-                    <label for="mqttPassword" class="block text-sm font-medium text-slate-600 mb-1">MQTT Password</label>
-                    <input type="password" id="mqttPassword" value="inites" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+                    <label for="mqttPassword" class="block text-sm font-medium text-slate-600 mb-1">Kata Sandi MQTT</label>
+                    <input type="password" id="mqttPassword" value="inicoba" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                 </div>
             </div>
             <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="flex items-center">
                     <input type="checkbox" id="useSecureConnection" checked class="h-5 w-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 mr-2">
-                    <label for="useSecureConnection" class="text-sm font-medium text-slate-700">Use Secure Connection (MQTTS/WSS)</label>
+                    <label for="useSecureConnection" class="text-sm font-medium text-slate-700">Gunakan Koneksi Aman (MQTTS/WSS)</label>
                 </div>
                 <div class="flex items-center">
                     <input type="checkbox" id="useWebsockets" class="h-5 w-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 mr-2">
-                    <label for="useWebsockets" class="text-sm font-medium text-slate-700">Use MQTT over WebSockets</label>
+                    <label for="useWebsockets" class="text-sm font-medium text-slate-700">Gunakan MQTT via WebSockets</label>
                 </div>
             </div>
             <div id="websocketsOptions" class="mt-4 pl-1" style="display: none;">
-                <label for="wsPath" class="block text-sm font-medium text-slate-600 mb-1">WebSocket Path</label>
+                <label for="wsPath" class="block text-sm font-medium text-slate-600 mb-1">Path WebSocket</label>
                 <input type="text" id="wsPath" value="/mqtt" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
             </div>
              <div class="mt-6">
-                <label for="connectTopicAliasMax" class="block text-sm font-medium text-slate-600 mb-1">Client Topic Alias Max (CONNECT)
-                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Max topic aliases client supports. 0 means no support. Broker may override.</span></span>
+                <label for="connectTopicAliasMax" class="block text-sm font-medium text-slate-600 mb-1">Alias Topik Maks Klien (CONNECT)
+                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Alias topik maks yang didukung klien. 0 berarti tidak ada dukungan. Broker dapat mengganti.</span></span>
                 </label>
                 <input type="number" id="connectTopicAliasMax" value="10" min="0" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
             </div>
@@ -100,27 +99,27 @@
                 <legend class="text-lg font-semibold text-slate-700 px-2">Last Will & Testament (LWT)</legend>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="lwtTopic" class="block text-sm font-medium text-slate-600 mb-1">LWT Topic</label>
-                        <input type="text" id="lwtTopic" placeholder="client/status/mydevice" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+                        <label for="lwtTopic" class="block text-sm font-medium text-slate-600 mb-1">Topik LWT</label>
+                        <input type="text" id="lwtTopic" placeholder="klien/status/perangkatSaya" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                     </div>
                     <div>
-                        <label for="lwtQos" class="block text-sm font-medium text-slate-600 mb-1">LWT QoS</label>
+                        <label for="lwtQos" class="block text-sm font-medium text-slate-600 mb-1">QoS LWT</label>
                         <select id="lwtQos" class="w-full p-3 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                             <option value="0">0</option><option value="1" selected>1</option><option value="2">2</option>
                         </select>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <label for="lwtPayload" class="block text-sm font-medium text-slate-600 mb-1">LWT Payload</label>
-                    <textarea id="lwtPayload" rows="2" placeholder="Device offline" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"></textarea>
+                    <label for="lwtPayload" class="block text-sm font-medium text-slate-600 mb-1">Payload LWT</label>
+                    <textarea id="lwtPayload" rows="2" placeholder="Perangkat offline" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"></textarea>
                 </div>
                 <div class="mt-4 flex items-center">
                     <input type="checkbox" id="lwtRetain" class="h-5 w-5 text-indigo-600 border-slate-300 rounded mr-2 focus:ring-indigo-500">
-                    <label for="lwtRetain" class="text-sm font-medium text-slate-700">Retain LWT Message</label>
+                    <label for="lwtRetain" class="text-sm font-medium text-slate-700">Retain Pesan LWT</label>
                 </div>
             </fieldset>
             <button id="connectMqttButton" class="mt-8 w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-150 ease-in-out transform hover:scale-105 flex items-center justify-center text-lg">
-                Connect to MQTT Broker <span id="mqttConnectSpinner" class="spinner" style="display: none;"></span>
+                Hubungkan ke Broker MQTT <span id="mqttConnectSpinner" class="spinner" style="display: none;"></span>
             </button>
             <div id="mqttLoginStatus" class="mt-4 text-sm text-center h-5"></div> 
         </div>
@@ -130,45 +129,45 @@
             
             <div class="bg-white p-4 rounded-lg shadow-md mb-6 text-sm text-slate-600 flex flex-wrap justify-between items-center gap-y-2">
                 <div>
-                    MQTT User: <span id="loggedInMqttUser" class="font-semibold text-indigo-600"></span>
+                    Pengguna MQTT: <span id="loggedInMqttUser" class="font-semibold text-indigo-600"></span>
                     <span class="mx-1 text-slate-300">|</span>
-                    MQTT Client ID: <span id="loggedInMqttClientId" class="font-mono text-xs text-indigo-500"></span>
+                    ID Klien MQTT: <span id="loggedInMqttClientId" class="font-mono text-xs text-indigo-500"></span>
                 </div>
                 <div class="flex items-center space-x-3">
                     <span>Transport: <span id="transportInfo" class="font-semibold text-slate-700"></span></span>
-                    <span>Secure: <span id="secureInfo" class="font-semibold text-slate-700"></span></span>
-                    <span>Broker Topic Alias Max: <span id="brokerTopicAliasMaxInfo" class="font-semibold text-slate-700">N/A</span></span>
+                    <span>Aman: <span id="secureInfo" class="font-semibold text-slate-700"></span></span>
+                    <span>Alias Topik Maks Broker: <span id="brokerTopicAliasMaxInfo" class="font-semibold text-slate-700">N/A</span></span>
                 </div>
-                <button id="disconnectMqttButton" class="bg-orange-100 text-orange-600 hover:bg-orange-200 font-medium py-2 px-4 rounded-lg text-xs transition-colors">Disconnect MQTT</button>
+                <button id="disconnectMqttButton" class="bg-orange-100 text-orange-600 hover:bg-orange-200 font-medium py-2 px-4 rounded-lg text-xs transition-colors">Putuskan MQTT</button>
             </div>
 
             <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
-                <h2 class="text-2xl font-semibold text-slate-800 mb-6">Real-time Performance</h2>
+                <h2 class="text-2xl font-semibold text-slate-800 mb-6">Performa Real-time</h2>
                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div class="p-4 bg-slate-50 rounded-lg shadow">
-                        <div class="text-sm text-slate-500">Msg In/sec</div>
+                        <div class="text-sm text-slate-500">Pesan Masuk/dtk</div>
                         <div id="perfMsgInRate" class="font-bold text-2xl text-green-500">0.0</div>
                     </div>
                     <div class="p-4 bg-slate-50 rounded-lg shadow">
-                        <div class="text-sm text-slate-500">Msg Out/sec</div>
+                        <div class="text-sm text-slate-500">Pesan Keluar/dtk</div>
                         <div id="perfMsgOutRate" class="font-bold text-2xl text-blue-500">0.0</div>
                     </div>
                     <div class="p-4 bg-slate-50 rounded-lg shadow">
-                        <div class="text-sm text-slate-500">Data In/sec</div>
+                        <div class="text-sm text-slate-500">Data Masuk/dtk</div>
                         <div id="perfBytesInRate" class="font-bold text-2xl text-green-600">0 B</div>
                     </div>
                     <div class="p-4 bg-slate-50 rounded-lg shadow">
-                        <div class="text-sm text-slate-500">Data Out/sec</div>
+                        <div class="text-sm text-slate-500">Data Keluar/dtk</div>
                         <div id="perfBytesOutRate" class="font-bold text-2xl text-blue-600">0 B</div>
                     </div>
                 </div>
                 <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <div class="p-3 bg-red-50 rounded-lg text-center">Connect Errors: <span id="perfConnectErrors" class="font-bold text-red-600 text-lg">0</span></div>
-                    <div class="p-3 bg-red-50 rounded-lg text-center">Publish Errors: <span id="perfPublishErrors" class="font-bold text-red-600 text-lg">0</span></div>
-                    <div class="p-3 bg-red-50 rounded-lg text-center">Subscribe Failures: <span id="perfSubscribeFailures" class="font-bold text-red-600 text-lg">0</span></div>
+                    <div class="p-3 bg-red-50 rounded-lg text-center">Kesalahan Koneksi: <span id="perfConnectErrors" class="font-bold text-red-600 text-lg">0</span></div>
+                    <div class="p-3 bg-red-50 rounded-lg text-center">Kesalahan Publish: <span id="perfPublishErrors" class="font-bold text-red-600 text-lg">0</span></div>
+                    <div class="p-3 bg-red-50 rounded-lg text-center">Kegagalan Subscribe: <span id="perfSubscribeFailures" class="font-bold text-red-600 text-lg">0</span></div>
                 </div>
                 <div class="mt-6 text-sm">
-                    <span class="text-slate-500">Recent Message Latencies (ms):</span>
+                    <span class="text-slate-500">Latensi Pesan Terbaru (ms):</span>
                     <span id="perfRecentLatencies" class="block font-mono text-purple-600 bg-purple-50 p-3 rounded-md mt-1 overflow-x-auto whitespace-nowrap">N/A</span>
                 </div>
             </div>
@@ -176,17 +175,17 @@
             <div class="flex flex-col lg:flex-row gap-6">
                 <div class="lg:w-2/5 xl:w-1/3 space-y-6">
                     <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-xl font-semibold text-slate-800 mb-6">Publish Message</h2>
+                        <h2 class="text-xl font-semibold text-slate-800 mb-6">Publish Pesan</h2>
                         <div class="space-y-4">
                             <div>
-                                <label for="publishTopic" class="block text-sm font-medium text-slate-600 mb-1">Topic
-                                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Leave blank if using Topic Alias > 0 and broker supports it.</span></span>
+                                <label for="publishTopic" class="block text-sm font-medium text-slate-600 mb-1">Topik
+                                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Kosongkan jika menggunakan Alias Topik > 0 dan broker mendukungnya.</span></span>
                                 </label>
                                 <input type="text" id="publishTopic" value="demo/features/web_publish" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                             </div>
                             <div>
                                 <label for="publishPayload" class="block text-sm font-medium text-slate-600 mb-1">Payload</label>
-                                <textarea id="publishPayload" rows="3" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">Hello from MQTTry!</textarea>
+                                <textarea id="publishPayload" rows="3" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">Halo dari MQTTry!</textarea>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -196,19 +195,19 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label for="messageExpiry" class="block text-sm font-medium text-slate-600 mb-1">Expiry (sec)</label>
-                                    <input type="number" id="messageExpiry" value="0" min="0" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" title="0 = no expiry">
+                                    <label for="messageExpiry" class="block text-sm font-medium text-slate-600 mb-1">Kadaluarsa (dtk)</label>
+                                    <input type="number" id="messageExpiry" value="0" min="0" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" title="0 = tidak ada kadaluarsa">
                                 </div>
                             </div>
                             <div>
-                                <label for="publishTopicAlias" class="block text-sm font-medium text-slate-600 mb-1">Topic Alias
-                                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Set >0 to use. Must be <= Broker's Max. Topic field can be empty if alias is used and known by broker.</span></span>
+                                <label for="publishTopicAlias" class="block text-sm font-medium text-slate-600 mb-1">Alias Topik
+                                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Atur >0 untuk digunakan. Harus <= Maks Broker. Field Topik bisa kosong jika alias digunakan dan diketahui broker.</span></span>
                                 </label>
-                                <input type="number" id="publishTopicAlias" placeholder="e.g., 1 (optional)" min="0" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+                                <input type="number" id="publishTopicAlias" placeholder="cth: 1 (opsional)" min="0" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                             </div>
                             <div class="flex items-center">
                                 <input type="checkbox" id="publishRetain" class="h-5 w-5 text-indigo-600 rounded mr-2 border-slate-300 focus:ring-indigo-500">
-                                <label for="publishRetain" class="text-sm font-medium text-slate-700">Retain Message</label>
+                                <label for="publishRetain" class="text-sm font-medium text-slate-700">Retain Pesan</label>
                             </div>
                             <button id="publishButton" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 transform hover:scale-105">Publish</button>
                         </div>
@@ -218,8 +217,8 @@
                         <h2 class="text-xl font-semibold text-slate-800 mb-6">Subscribe (MQTTv5)</h2>
                         <div class="space-y-4">
                             <div>
-                                <label for="subscribeTopic" class="block text-sm font-medium text-slate-600 mb-1">Topic</label>
-                                <input type="text" id="subscribeTopic" value="demo/#" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" placeholder="e.g., demo/# or $share/group/topic">
+                                <label for="subscribeTopic" class="block text-sm font-medium text-slate-600 mb-1">Topik</label>
+                                <input type="text" id="subscribeTopic" value="demo/#" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" placeholder="cth: demo/# atau $share/grup/topik">
                             </div>
                             <div>
                                 <label for="subscribeQos" class="block text-sm font-medium text-slate-600 mb-1">QoS</label>
@@ -228,28 +227,28 @@
                                 </select>
                             </div>
                             <fieldset class="border border-slate-200 p-4 rounded-lg">
-                                <legend class="text-md font-medium text-slate-600 px-1">Options</legend>
+                                <legend class="text-md font-medium text-slate-600 px-1">Opsi</legend>
                                 <div class="mt-2 space-y-3">
                                     <div class="flex items-center">
                                         <input type="checkbox" id="subNoLocal" class="h-5 w-5 text-indigo-600 rounded mr-2 border-slate-300 focus:ring-indigo-500">
                                         <label for="subNoLocal" class="text-sm font-medium text-slate-700">No Local
-                                            <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Broker should not send messages published by this client back to this client.</span></span>
+                                            <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Broker tidak boleh mengirim pesan yang dipublish oleh klien ini kembali ke klien ini.</span></span>
                                         </label>
                                     </div>
                                     <div class="flex items-center">
                                         <input type="checkbox" id="subRetainAsPublished" class="h-5 w-5 text-indigo-600 rounded mr-2 border-slate-300 focus:ring-indigo-500">
-                                        <label for="subRetainAsPublished" class="text-sm font-medium text-slate-700">Retain As Published
-                                            <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">When sending retained messages, broker should use the Retain flag from original publish.</span></span>
+                                        <label for="subRetainAsPublished" class="text-sm font-medium text-slate-700">Retain Sesuai Publish
+                                            <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Saat mengirim pesan retained, broker harus menggunakan flag Retain dari publish asli.</span></span>
                                         </label>
                                     </div>
                                     <div>
-                                        <label for="subRetainHandling" class="block text-sm font-medium text-slate-600 mb-1">Retain Handling
-                                             <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">0: Send retained on subscribe. 1: Send if new subscription. 2: Do not send.</span></span>
+                                        <label for="subRetainHandling" class="block text-sm font-medium text-slate-600 mb-1">Penanganan Retain
+                                             <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">0: Kirim retained saat subscribe. 1: Kirim jika sub baru. 2: Jangan kirim.</span></span>
                                         </label>
                                         <select id="subRetainHandling" class="w-full p-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
-                                            <option value="0" selected>0 - Send on subscribe</option>
-                                            <option value="1">1 - Send if new sub</option>
-                                            <option value="2">2 - Do not send</option>
+                                            <option value="0" selected>0 - Kirim saat subscribe</option>
+                                            <option value="1">1 - Kirim jika sub baru</option>
+                                            <option value="2">2 - Jangan kirim</option>
                                         </select>
                                     </div>
                                 </div>
@@ -261,34 +260,65 @@
 
                 <div class="lg:w-3/5 xl:w-2/3 space-y-6">
                     <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-xl font-semibold text-slate-800 mb-6">Received Messages</h2>
+                        <h2 class="text-xl font-semibold text-slate-800 mb-6">Pesan Diterima</h2>
                         <ul id="messageLog" class="h-96 overflow-y-auto border border-slate-200 bg-slate-50 rounded-lg p-4 space-y-3 custom-scrollbar">
-                            <li class="text-slate-400 italic p-4 text-center" id="noMessagesPlaceholder">Connect to MQTT to see messages...</li>
+                            <li class="text-slate-400 italic p-4 text-center" id="noMessagesPlaceholder">Hubungkan ke MQTT untuk melihat pesan...</li>
                         </ul>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-xl font-semibold text-slate-800 mb-6">Request / Response</h2>
                         <div class="space-y-4">
                             <div>
-                                <label for="targetClientId" class="block text-sm font-medium text-slate-600 mb-1">Target Client ID (Optional)
-                                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">If filled, this becomes a direct request to the specified client ID.</span></span>
+                                <label for="targetClientId" class="block text-sm font-medium text-slate-600 mb-1">ID Klien Target (Opsional)
+                                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Jika diisi, ini menjadi request langsung ke ID klien yang ditentukan.</span></span>
                                 </label>
-                                <input type="text" id="targetClientId" placeholder="Enter target client ID for direct request" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+                                <input type="text" id="targetClientId" placeholder="Masukkan ID klien target untuk request langsung" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                             </div>
                             <div>
-                                <label for="serviceOrTopicName" class="block text-sm font-medium text-slate-600 mb-1">Service Name / General Topic
-                                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">If Target Client ID is set, this is the service/action name (e.g., 'echo'). Otherwise, it's the full topic for a general request.</span></span>
+                                <label for="serviceOrTopicName" class="block text-sm font-medium text-slate-600 mb-1">Nama Service / Topik General
+                                    <span class="tooltip text-xs text-slate-400">(?)<span class="tooltiptext">Jika ID Klien Target diatur, ini adalah nama service/aksi (cth: 'echo'). Jika tidak, ini adalah topik penuh untuk request general.</span></span>
                                 </label>
                                 <input type="text" id="serviceOrTopicName" value="echo_service" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                             </div>
                             <div>
-                                <label for="requestPayload" class="block text-sm font-medium text-slate-600 mb-1">Request Payload</label>
-                                <textarea id="requestPayload" rows="2" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">Please echo this!</textarea>
+                                <label for="requestPayload" class="block text-sm font-medium text-slate-600 mb-1">Payload Request</label>
+                                <textarea id="requestPayload" rows="2" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">Tolong echo ini!</textarea>
                             </div>
-                            <button id="sendRequestButton" class="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 transform hover:scale-105">Send Request</button>
+                            <button id="sendRequestButton" class="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 transform hover:scale-105">Kirim Request</button>
                         </div>
                         <div id="requestResponseLog" class="mt-6 text-sm space-y-2 h-48 overflow-y-auto border border-slate-200 bg-slate-50 p-4 rounded-lg custom-scrollbar">
-                            <p class="italic text-slate-400 text-center p-4" id="noReqResPlaceholder">Request/Response activity will appear here...</p>
+                            <p class="italic text-slate-400 text-center p-4" id="noReqResPlaceholder">Aktivitas Request/Response akan muncul di sini...</p>
+                        </div>
+                    </div>
+                     <!-- Card untuk Tes Flow Control (Bulk Publish) -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg mt-6">
+                        <h2 class="text-xl font-semibold text-slate-800 mb-4">Tes Flow Control (Bulk Publish)</h2>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="bulkTopic" class="block text-sm font-medium text-slate-600 mb-1">Topik Bulk:</label>
+                                <input type="text" id="bulkTopic" value="test/flow_control_bulk" class="w-full p-3 border border-slate-300 rounded-lg">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="bulkCount" class="block text-sm font-medium text-slate-600 mb-1">Jumlah Pesan:</label>
+                                    <input type="number" id="bulkCount" value="50" min="1" class="w-full p-3 border border-slate-300 rounded-lg">
+                                </div>
+                                <div>
+                                    <label for="bulkQos" class="block text-sm font-medium text-slate-600 mb-1">QoS:</label>
+                                    <select id="bulkQos" class="w-full p-3 bg-white border border-slate-300 rounded-lg">
+                                        <option value="0">0</option>
+                                        <option value="1" selected>1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="bulkDelay" class="block text-sm font-medium text-slate-600 mb-1">Delay Antar Publish (ms):</label>
+                                <input type="number" id="bulkDelay" value="0" min="0" class="w-full p-3 border border-slate-300 rounded-lg">
+                            </div>
+                            <button id="sendBulkButton" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:shadow-lg">
+                                Kirim Pesan Bulk (Tes Flow Control)
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -303,16 +333,18 @@
         let isMqttConnected = false; 
         let hasReceivedMessages = false;
         let firstReqResMessage = true;
+        let socketIoConnected = false; 
 
         function setMqttUiState(connected) {
             isMqttConnected = connected;
             if (connected) {
                 DOM.mqttConnectionSection.style.display = 'none';
                 DOM.mainMqttApp.style.display = 'block';
+                 if(DOM.mqttLoginStatus) DOM.mqttLoginStatus.textContent = 'Terhubung ke broker MQTT.'; 
             } else {
                 DOM.mqttConnectionSection.style.display = 'block';
                 DOM.mainMqttApp.style.display = 'none';
-                if(DOM.mqttLoginStatus) DOM.mqttLoginStatus.textContent = 'Please connect to MQTT broker.';
+                if(DOM.mqttLoginStatus) DOM.mqttLoginStatus.textContent = 'Silakan hubungkan ke broker MQTT.'; 
                 if(DOM.noMessagesPlaceholder) DOM.noMessagesPlaceholder.style.display = 'block';
                 if(DOM.messageLogEl) DOM.messageLogEl.innerHTML = ''; hasReceivedMessages = false;
                 if(DOM.noReqResPlaceholder) DOM.noReqResPlaceholder.style.display = 'block';
@@ -343,7 +375,7 @@
             DOM.secureInfoEl = document.getElementById('secureInfo');
             DOM.brokerTopicAliasMaxInfoEl = document.getElementById('brokerTopicAliasMaxInfo');
             DOM.disconnectMqttButton = document.getElementById('disconnectMqttButton'); 
-            DOM.connectionStatusEl = document.getElementById('connectionStatus');
+            DOM.connectionStatusEl = document.getElementById('connectionStatus'); 
             DOM.perfMsgInRateEl = document.getElementById('perfMsgInRate');
             DOM.perfMsgOutRateEl = document.getElementById('perfMsgOutRate');
             DOM.perfBytesInRateEl = document.getElementById('perfBytesInRate');
@@ -373,6 +405,12 @@
             DOM.sendRequestButton = document.getElementById('sendRequestButton');
             DOM.requestResponseLogEl = document.getElementById('requestResponseLog');
             DOM.noReqResPlaceholder = document.getElementById('noReqResPlaceholder');
+            DOM.bulkTopicEl = document.getElementById('bulkTopic');
+            DOM.bulkCountEl = document.getElementById('bulkCount');
+            DOM.bulkQosEl = document.getElementById('bulkQos');
+            DOM.bulkDelayEl = document.getElementById('bulkDelay'); // Ditambahkan
+            DOM.sendBulkButton = document.getElementById('sendBulkButton');
+
 
             setMqttUiState(false); 
 
@@ -381,15 +419,20 @@
             if (DOM.subscribeButton) DOM.subscribeButton.addEventListener('click', handleSubscribeClick);
             if (DOM.publishButton) DOM.publishButton.addEventListener('click', handlePublishClick);
             if (DOM.sendRequestButton) DOM.sendRequestButton.addEventListener('click', handleSendRequestClick);
+            if (DOM.sendBulkButton) DOM.sendBulkButton.addEventListener('click', handleSendBulkClick);
             if (DOM.useWebsocketsEl) DOM.useWebsocketsEl.addEventListener('change', () => {
                 DOM.websocketsOptionsEl.style.display = DOM.useWebsocketsEl.checked ? 'block' : 'none';
             });
             
             if (currentWebUser) {
-                console.log("Web user authenticated, connecting Socket.IO.");
+                console.log("Pengguna web terautentikasi, mencoba menghubungkan Socket.IO.");
+                if (DOM.mqttLoginStatus) updateMqttLoginStatus("Menghubungkan ke server aplikasi...", false); 
                 socket.connect();
             } else {
-                console.log("No web user authenticated, Socket.IO connection deferred.");
+                console.log("Tidak ada pengguna web yang terautentikasi, koneksi Socket.IO ditunda.");
+                if (DOM.mqttLoginStatus) updateMqttLoginStatus("Login web diperlukan untuk menggunakan aplikasi ini.", true);
+                DOM.mqttConnectionSection.style.display = 'none';
+                DOM.mainMqttApp.style.display = 'none';
             }
         });
 
@@ -410,34 +453,52 @@
             if (!DOM.mqttLoginStatus) return;
             DOM.mqttLoginStatus.textContent = message;
             DOM.mqttLoginStatus.className = `mt-4 text-sm text-center h-5 ${isError ? 'text-red-600' : 'text-green-600'}`;
-            DOM.connectMqttButton.disabled = false;
-            DOM.mqttConnectSpinner.style.display = 'none';
+            if (DOM.connectMqttButton) DOM.connectMqttButton.disabled = false; 
+            if (DOM.mqttConnectSpinner) DOM.mqttConnectSpinner.style.display = 'none'; 
         }
 
-        socket.on('connect', () => { console.log('Socket.IO: Connected to backend.'); });
-        socket.on('disconnect', () => { 
-            console.log('Socket.IO: Disconnected from backend.');
-            updateMqttStatus('Socket.IO Disconnected. MQTT operations paused.', 'error');
-            setMqttUiState(false); 
+        socket.on('connect', () => { 
+            console.log('Socket.IO: Terhubung ke backend.'); 
+            socketIoConnected = true;
         });
+
+        socket.on('disconnect', (reason) => { 
+            console.log('Socket.IO: Terputus dari backend. Alasan:', reason); 
+            socketIoConnected = false;
+            updateMqttStatus('Koneksi Socket.IO terputus. Operasi MQTT dijeda.', 'error');
+            updateMqttLoginStatus('Koneksi Socket.IO terputus. Coba segarkan halaman.', true); 
+            setMqttUiState(false); 
+            if (DOM.connectMqttButton) DOM.connectMqttButton.disabled = true; 
+        });
+
         socket.on('connect_error', (err) => {
-            console.error('Socket.IO connection error:', err);
-            updateMqttStatus(`Socket.IO Connection Error: ${err.message}. Try refreshing.`, 'error');
+            console.error('Kesalahan koneksi Socket.IO:', err);
+            socketIoConnected = false;
+            updateMqttStatus(`Kesalahan Koneksi Socket.IO: ${err.message}. Coba segarkan.`, 'error');
+            updateMqttLoginStatus(`Kesalahan Koneksi Socket.IO. Coba segarkan.`, true);
+            setMqttUiState(false);
+            if (DOM.connectMqttButton) DOM.connectMqttButton.disabled = true;
         });
 
         socket.on('request_mqtt_login', (data) => {
-            console.log('Socket.IO: Backend requests MQTT login.', data.message);
-            if (DOM.mqttLoginStatus) updateMqttLoginStatus(data.message, false);
+            console.log('Socket.IO: Backend meminta login MQTT.', data.message);
+            if (socketIoConnected) { 
+                updateMqttLoginStatus(data.message, false); 
+                setMqttUiState(false); 
+                if (DOM.connectMqttButton) DOM.connectMqttButton.disabled = false; 
+            } else {
+                updateMqttLoginStatus('Menunggu koneksi Socket.IO stabil...', true);
+            }
         });
 
         socket.on('mqtt_login_status', (data) => {
-            console.log('JS: Received mqtt_login_status:', data);
+            console.log('JS: Menerima mqtt_login_status:', data);
             if (data.success) {
-                updateMqttLoginStatus(`MQTT Logged in as ${data.mqtt_username}!`, false);
+                updateMqttLoginStatus(`MQTT Login sebagai ${data.mqtt_username} berhasil!`, false);
                 if (DOM.loggedInMqttUser) DOM.loggedInMqttUser.textContent = data.mqtt_username;
                 if (DOM.loggedInMqttClientId) DOM.loggedInMqttClientId.textContent = data.mqtt_client_id || 'N/A';
                 if (DOM.transportInfoEl) DOM.transportInfoEl.textContent = data.transport ? data.transport.toUpperCase() : 'N/A';
-                if (DOM.secureInfoEl) DOM.secureInfoEl.textContent = data.secure ? 'Yes (TLS)' : 'No';
+                if (DOM.secureInfoEl) DOM.secureInfoEl.textContent = data.secure ? 'Ya (TLS)' : 'Tidak';
                 setMqttUiState(true); 
             } else {
                 updateMqttLoginStatus(data.message, true);
@@ -447,18 +508,21 @@
         
         socket.on('mqtt_status', (data) => { 
             if (!DOM.connectionStatusEl) return;
-            if (isMqttConnected || data.message.toLowerCase().includes('attempting')) { 
-                if (data.message.toLowerCase().includes('connected as') || data.message.toLowerCase().includes('connected successfully')) {
+            if (isMqttConnected || data.message.toLowerCase().includes('mencoba')) { 
+                if (data.message.toLowerCase().includes('terhubung sebagai') || data.message.toLowerCase().includes('terhubung.')) { 
                     updateMqttStatus(`MQTT: ${data.message}`, 'success');
                     if (!isMqttConnected) setMqttUiState(true); 
-                } else if (data.message.toLowerCase().includes('failed') || data.message.toLowerCase().includes('error') || data.message.toLowerCase().includes('disconnected')) {
+                } else if (data.message.toLowerCase().includes('gagal') || data.message.toLowerCase().includes('kesalahan') || data.message.toLowerCase().includes('terputus')) {
                     updateMqttStatus(`MQTT: ${data.message}`, 'error');
                     setMqttUiState(false); 
-                } else if (data.message.toLowerCase().includes('connecting') || data.message.toLowerCase().includes('attempting')) {
+                } else if (data.message.toLowerCase().includes('mencoba')) { 
                     updateMqttStatus(`MQTT: ${data.message}`, 'warning');
                 } else { 
                     updateMqttStatus(`MQTT: ${data.message}`, 'info');
                 }
+            } else if (data.message.toLowerCase().includes('gagal') || data.message.toLowerCase().includes('terputus')) {
+                updateMqttStatus(`MQTT: ${data.message}`, 'error');
+                setMqttUiState(false);
             }
         });
 
@@ -471,7 +535,7 @@
             const listItem = document.createElement('li');
             listItem.className = 'bg-white p-3 rounded-lg shadow-sm break-words';
             const escapedPayload = escapeHtml(data.payload);
-            let latencyText = data.latency_ms !== null ? `<span class="text-purple-600">(Latency: ${data.latency_ms.toFixed(1)} ms)</span>` : "";
+            let latencyText = data.latency_ms !== null ? `<span class="text-purple-600">(Latensi: ${data.latency_ms.toFixed(1)} ms)</span>` : "";
             let topicAliasInfo = data.topic_alias_used !== null ? `<span class="text-teal-700">(Alias: ${data.topic_alias_used})</span>` : "";
             
             listItem.innerHTML = `
@@ -481,13 +545,13 @@
                 </div>
                 <pre class="mt-1 text-slate-600 bg-slate-100 p-2 rounded-md text-xs whitespace-pre-wrap">${escapedPayload}</pre>
                 <div class="mt-1 text-xs text-slate-500 flex justify-between items-center">
-                    <span>QoS: ${data.qos} | Retain: ${data.retain ? 'Yes' : 'No'} ${topicAliasInfo}</span>
+                    <span>QoS: ${data.qos} | Retain: ${data.retain ? 'Ya' : 'Tidak'} ${topicAliasInfo}</span>
                     ${latencyText}
                 </div>`;
             DOM.messageLogEl.prepend(listItem);
         });
 
-        socket.on('publish_ack', (data) => { /* Optional */ });
+        socket.on('publish_ack', (data) => { /* Opsional */ });
 
         socket.on('mqtt_request_response_update', (data) => {
             if (!DOM.requestResponseLogEl || !isMqttConnected) return;
@@ -500,12 +564,12 @@
             p.className = 'border-b border-slate-100 pb-2 mb-2 last:border-b-0 last:pb-0 last:mb-0';
             let content = `<strong class="font-semibold">[${data.type.toUpperCase()}]</strong> <span class="text-xs text-slate-400">CorrID: ${data.correlation_id || 'N/A'}</span>`;
             if (data.status) content += ` - Status: <span class="font-medium">${data.status}</span>`;
-            if (data.message) content += ` - Msg: ${escapeHtml(data.message)}`;
-            if (data.request_topic) content += ` <br><span class="text-xs">ReqTopic: ${escapeHtml(data.request_topic)}</span>`;
-            if (data.response_topic_subscribed) content += ` <br><span class="text-xs">RespSub: ${escapeHtml(data.response_topic_subscribed)}</span>`;
-            if (data.topic) content += ` <br><span class="text-xs">OnTopic: ${escapeHtml(data.topic)}</span>`;
+            if (data.message) content += ` - Pesan: ${escapeHtml(data.message)}`;
+            if (data.request_topic) content += ` <br><span class="text-xs">TopikReq: ${escapeHtml(data.request_topic)}</span>`;
+            if (data.response_topic_subscribed) content += ` <br><span class="text-xs">SubRespon: ${escapeHtml(data.response_topic_subscribed)}</span>`;
+            if (data.topic) content += ` <br><span class="text-xs">PadaTopik: ${escapeHtml(data.topic)}</span>`;
             if (data.payload) content += `<br><pre class="text-xs bg-slate-100 p-1.5 rounded mt-1">${escapeHtml(data.payload)}</pre>`;
-            if (data.latency_ms) content += ` <span class="text-xs text-purple-600">(Latency: ${data.latency_ms.toFixed(1)} ms)</span>`;
+            if (data.latency_ms) content += ` <span class="text-xs text-purple-600">(Latensi: ${data.latency_ms.toFixed(1)} ms)</span>`;
             
             if (data.type === 'error' || data.status === 'timeout') p.classList.add('text-red-600');
             else if (data.type === 'response' || data.status === 'completed') p.classList.add('text-green-600');
@@ -537,7 +601,7 @@
 
         function escapeHtml(unsafe) {
             if (typeof unsafe !== 'string') return String(unsafe);
-            return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
         }
         function formatBytes(bytes, decimals = 1) {
             if (bytes === 0) return '0 B';
@@ -551,7 +615,7 @@
         function handleSubmitMqttLoginClick() { 
             DOM.connectMqttButton.disabled = true;
             DOM.mqttConnectSpinner.style.display = 'inline-block';
-            updateMqttLoginStatus('Attempting MQTT connection...', false);
+            updateMqttLoginStatus('Mencoba koneksi MQTT...', false);
 
             const mqttLoginData = { 
                 username: DOM.mqttUsernameEl.value.trim(),
@@ -574,24 +638,27 @@
                 if (socket.connected) { 
                     socket.emit('submit_mqtt_login', mqttLoginData);
                 } else {
-                     updateMqttLoginStatus('Socket.IO not connected. Please wait or refresh.', true);
+                     updateMqttLoginStatus('Socket.IO tidak terhubung. Coba segarkan halaman.', true);
+                     DOM.connectMqttButton.disabled = false; 
+                     DOM.mqttConnectSpinner.style.display = 'none';
                 }
             } else {
-                updateMqttLoginStatus('MQTT Username and password are required.', true);
+                updateMqttLoginStatus('Nama pengguna dan kata sandi MQTT wajib diisi.', true);
             }
         }
 
         function handleDisconnectMqttClick() {
-            console.log("JS: MQTT Disconnect clicked.");
+            console.log("JS: Tombol Disconnect MQTT diklik.");
             if (socket.connected) {
                 socket.disconnect(); 
+            } else {
+                setMqttUiState(false); 
+                updateMqttStatus("MQTT Terputus oleh pengguna.", "info");
             }
-            setMqttUiState(false); 
-            updateMqttStatus("MQTT Disconnected by user.", "info");
         }
 
         function handleSubscribeClick() {
-            if (!isMqttConnected) { alert("Connect to MQTT first!"); return; }
+            if (!isMqttConnected) { alert("Hubungkan ke MQTT terlebih dahulu!"); return; }
             const subData = {
                 topic: DOM.subscribeTopicEl.value.trim(),
                 qos: parseInt(DOM.subscribeQosEl.value, 10),
@@ -600,12 +667,12 @@
                 retain_handling: parseInt(DOM.subRetainHandlingEl.value, 10)
             };
             if (subData.topic && socket.connected) socket.emit('subscribe_to_topic', subData);
-            else if (!socket.connected) alert("Socket.IO not connected. Please login to web app.");
-            else alert("Please enter a topic to subscribe to.");
+            else if (!socket.connected) alert("Socket.IO tidak terhubung. Silakan login ke aplikasi web.");
+            else alert("Silakan masukkan topik untuk subscribe.");
         }
 
         function handlePublishClick() {
-            if (!isMqttConnected) { alert("Connect to MQTT first!"); return; }
+            if (!isMqttConnected) { alert("Hubungkan ke MQTT terlebih dahulu!"); return; }
             const pubData = {
                 topic: DOM.publishTopicEl.value.trim(), payload: DOM.publishPayloadEl.value,
                 qos: parseInt(DOM.publishQosEl.value, 10), retain: DOM.publishRetainEl.checked,
@@ -618,14 +685,14 @@
             if ((pubData.topic || (pubData.topic_alias !== null && pubData.topic_alias > 0)) && socket.connected) {
                 socket.emit('publish_mqtt_message', pubData);
             } else if (!socket.connected) {
-                alert("Socket.IO not connected. Please login to web app.");
+                alert("Socket.IO tidak terhubung. Silakan login ke aplikasi web.");
             } else {
-                alert("Please enter a topic (or a valid Topic Alias > 0) to publish to.");
+                alert("Silakan masukkan topik (atau Topic Alias > 0 yang valid) untuk publish.");
             }
         }
 
         function handleSendRequestClick() {
-            if (!isMqttConnected) { alert("Connect to MQTT first!"); return; }
+            if (!isMqttConnected) { alert("Hubungkan ke MQTT terlebih dahulu!"); return; }
             const reqData = {
                 target_client_id: DOM.targetClientIdEl.value.trim(),
                 service_or_topic_name: DOM.serviceOrTopicNameEl.value.trim(),
@@ -637,16 +704,46 @@
                 if (firstReqResMessage && DOM.requestResponseLogEl) { DOM.requestResponseLogEl.innerHTML = ''; firstReqResMessage = false; }
                 const p = document.createElement('p');
                 let requestDesc = reqData.target_client_id 
-                    ? `Direct to ${escapeHtml(reqData.target_client_id)} for service ${escapeHtml(reqData.service_or_topic_name)}`
-                    : `General to ${escapeHtml(reqData.service_or_topic_name)}`;
+                    ? `Direct ke ${escapeHtml(reqData.target_client_id)} untuk service ${escapeHtml(reqData.service_or_topic_name)}`
+                    : `General ke ${escapeHtml(reqData.service_or_topic_name)}`;
 
-                p.innerHTML = `<strong class="font-semibold text-blue-600">[SENT REQUEST]</strong> ${requestDesc} <br><pre class="text-xs bg-slate-100 p-1.5 rounded mt-1">${escapeHtml(reqData.request_payload)}</pre>`;
+                p.innerHTML = `<strong class="font-semibold text-blue-600">[KIRIM REQUEST]</strong> ${requestDesc} <br><pre class="text-xs bg-slate-100 p-1.5 rounded mt-1">${escapeHtml(reqData.request_payload)}</pre>`;
                 p.className = 'border-b border-slate-100 pb-2 mb-2 last:border-b-0 last:pb-0 last:mb-0';
                 if (DOM.requestResponseLogEl) DOM.requestResponseLogEl.prepend(p);
             } else if (!socket.connected) {
-                alert("Socket.IO not connected. Please login to web app.");
+                alert("Socket.IO tidak terhubung. Silakan login ke aplikasi web.");
             } else {
-                alert("Please enter a Service Name / General Topic for the request.");
+                alert("Silakan masukkan Nama Service / Topik General untuk request.");
+            }
+        }
+
+        function handleSendBulkClick() {
+            if (!isMqttConnected) { alert("Hubungkan ke MQTT terlebih dahulu!"); return; }
+            
+            const topic = DOM.bulkTopicEl.value.trim();
+            const count = parseInt(DOM.bulkCountEl.value, 10);
+            const qos = parseInt(DOM.bulkQosEl.value, 10);
+            const delay_ms = parseInt(DOM.bulkDelayEl.value, 10);
+
+
+            if (!topic) {
+                alert("Topik bulk tidak boleh kosong.");
+                return;
+            }
+            if (isNaN(count) || count < 1) {
+                alert("Jumlah pesan tidak valid.");
+                return;
+            }
+
+            if (socket.connected) {
+                socket.emit('test_bulk_publish', {
+                    topic: topic,
+                    count: count,
+                    qos: qos,
+                    delay_ms: (isNaN(delay_ms) || delay_ms < 0) ? 0 : delay_ms
+                });
+            } else {
+                alert("Socket.IO tidak terhubung. Silakan login ulang ke aplikasi web.");
             }
         }
     </script>
